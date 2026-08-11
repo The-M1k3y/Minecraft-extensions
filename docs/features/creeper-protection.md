@@ -54,6 +54,14 @@ If a block position is no longer air when Vane restores its saved state, the rep
 
 Pending rebuilds are completed immediately when the module is disabled.
 
+### Known moving-block restoration issue
+
+The Vane staged rebuild has a known failure mode when an explosion snapshots a block while that block is in motion, for example during piston movement. Restoring that transient state later can leave an effectively invisible/non-existent moving-block placeholder, commonly observed as legacy **Block 34** or **Block 36**. These broken blocks are not normally removable through gameplay and may require commands to clean up.
+
+A replacement staged-rebuild implementation must not reproduce this behavior. It should detect transient or moving block states and avoid persisting/restoring them as ordinary block snapshots. Depending on the implementation, suitable handling may include deferring the snapshot until the movement settles, resolving the moving state to a stable source/destination block state, skipping the transient placeholder and reconstructing the stable piston state, or otherwise validating snapshots before restoration.
+
+The important invariant is that the rebuild process must never leave invalid, invisible, or command-only-cleanup block states behind.
+
 ## Hanging entities
 
 Vane separately cancels `HangingBreakByEntityEvent` when the remover is a protected creeper. This is important because protecting the block list alone does not guarantee paintings/item frames survive an explosion.
@@ -64,14 +72,16 @@ At minimum:
 
 - creeper explosions must not permanently remove or alter protected blocks;
 - hanging entities should not be destroyed by protected creeper explosions;
-- entity damage and player damage do **not** need to be suppressed merely because block damage is protected, unless separately configured by the replacement.
+- entity damage and player damage do **not** need to be suppressed merely because block damage is protected, unless separately configured by the replacement;
+- transient moving-block states must never be restored as invalid placeholder blocks such as the observed Block 34/36 artifacts.
 
 Preferred compatibility:
 
 - preserve the visible explosion followed by delayed staged rebuilding;
 - preserve block states, including stateful blocks, as reliably as practical;
 - avoid duplicate block drops while simulating destruction;
-- handle conflicting player/world edits during a pending rebuild predictably.
+- handle conflicting player/world edits during a pending rebuild predictably;
+- handle piston/moving-block interactions explicitly so restoration always results in valid stable world state.
 
 ## Source references
 
