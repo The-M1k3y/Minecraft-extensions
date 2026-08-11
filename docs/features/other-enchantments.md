@@ -18,7 +18,7 @@ These enchantments are **nice to have** rather than required for the initial rep
 - Supported item: Elytra
 - Exclusive with Wings
 - Recipe tier: Ancient Tome of the Gods
-- Default flight speeds by level: `0.7`, `1.1`, `1.4`, `1.7`, `2.0` blocks per tick-scale velocity target used by Vane's movement calculation
+- Default configured flying speeds by level: `0.7`, `1.1`, `1.4`, `1.7`, `2.0` (Vane describes these as blocks per second)
 - Default acceleration factor: `0.1`
 
 While the player is sneaking and gliding with Angel on the chest item, Vane continuously accelerates the player toward their look direction using an exponential moving-average style velocity adjustment. The contribution is reduced when the current velocity points away from the look direction. Firework particles are spawned behind the player.
